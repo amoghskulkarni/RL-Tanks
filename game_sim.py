@@ -65,20 +65,28 @@ class Game:
             # This will ensure that the game doesn't run faster than 60 FPS
             self.clock.tick(60)
 
+            keys = pygame.key.get_pressed()
             events = pygame.event.get()
+
+            # Check for "quit" events
             for event in events:
                 if event.type == QUIT:
                     going = False
                 elif event.type == KEYDOWN and event.key == K_ESCAPE:
                     going = False
 
+            # Tell agents to take actions
             for agent in self.player_agents:
-                agent.take_action(events)
+                if isinstance(agent, HumanAgent):
+                    agent.take_action(keys=keys, events=events)
+                elif isinstance(agent, RLAgent):
+                    agent.take_action()
 
             # Call update methods of all the sprites
             self.all_player_sprites.update()
             self.all_projectile_sprites.update()
 
+            # Update the screen
             self.screen.blit(self.background, (0, 0))
             self.all_player_sprites.draw(self.screen)
             self.all_projectile_sprites.draw(self.screen)

@@ -1,4 +1,3 @@
-import pygame
 from pygame.locals import *
 
 
@@ -8,9 +7,19 @@ class HumanAgent:
         self.sprite = sprite
         self.score = 0
 
-    def take_action(self, events):
+    def take_action(self, **kwargs):
+        keys = []
+        events = []
+        # Parse kwargs
+        for kwarg in kwargs:
+            if kwarg == "keys":
+                keys = kwargs[kwarg]
+            elif kwarg == "events":
+                events = kwargs[kwarg]
+            else:
+                raise KeyError
+
         # Check what keys are pressed, take an action accordingly
-        keys = pygame.key.get_pressed()
         if keys[K_w]:
             self.sprite.move_fwd = True
         if keys[K_s]:
@@ -31,5 +40,5 @@ class RLAgent:
         self.sprite = sprite
         self.score = 0
 
-    def take_action(self, events):
+    def take_action(self):
         pass
