@@ -1,5 +1,6 @@
 from pygame.locals import *
 from game_objects import *
+from pygame import Color
 
 
 class Game:
@@ -38,9 +39,15 @@ class Game:
         self.players = []
         for i in range(2):
             if i == 0:
-                self.players.append(Player(game_obj=self, init_direction=90, x=10, y=10))
+                self.players.append(Player(game_obj=self,
+                                           image_name='images/tank1.bmp',
+                                           init_direction=90,
+                                           x=10, y=10))
             else:
-                self.players.append(Player(game_obj=self, init_direction=270, x=750, y=750))
+                self.players.append(Player(game_obj=self,
+                                           image_name='images/tank2.bmp',
+                                           init_direction=270,
+                                           x=750, y=750))
 
         self.all_player_sprites = pygame.sprite.RenderPlain(tuple(self.players))
         self.all_projectile_sprites = pygame.sprite.RenderPlain(tuple([]))
