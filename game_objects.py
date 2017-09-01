@@ -49,9 +49,9 @@ class Tank(pygame.sprite.Sprite):
         reverse_move_dir = {0: (0, 1), 90: (1, 0), 180: (0, -1), 270: (-1, 0)}
 
         if move_direction == 'forward':
-            new_pos = forward_move_dir[self.direction]
+            new_pos = self.rect.move(forward_move_dir[self.direction])
         elif move_direction == 'reverse':
-            new_pos = reverse_move_dir[self.direction]
+            new_pos = self.rect.move(reverse_move_dir[self.direction])
 
         # If tank's new position is still in the canvas, move the tank
         if self.area.contains(new_pos):
@@ -92,10 +92,10 @@ class Projectile(pygame.sprite.Sprite):
         init_position_dir = {0: (start_x, start_y - 4), 90: (start_x - 4, start_y),
                              180: (start_x, start_y + 4), 270: (start_x + 4, start_y)}
 
+        self.game = game_obj
         self.image, self.rect = load_image(name='images/projectile.bmp', scale_x=4, scale_y=4)
         self.area = self.game.screen.get_rect()
 
-        self.game = game_obj
         self.direction = move_direction
 
         self.rect.center = init_position_dir[self.direction]
@@ -105,7 +105,7 @@ class Projectile(pygame.sprite.Sprite):
     def move(self):
         move_direction_dir = {0: (0, -10), 90: (-10, 0), 180: (0, 10), 270: (10, 0)}
 
-        new_pos = move_direction_dir[self.direction]
+        new_pos = self.rect.move(move_direction_dir[self.direction])
 
         if self.area.contains(new_pos):
             self.rect = new_pos
