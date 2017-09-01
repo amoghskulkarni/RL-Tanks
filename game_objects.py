@@ -6,7 +6,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, game_obj, init_direction, x, y):
         pygame.sprite.Sprite.__init__(self)  # call Sprite initializer
 
-        self.image, self.rect = load_image(name='tank.bmp', scale_x=32, scale_y=32, colorkey=-1)
+        self.image, self.rect = load_image(name='images/tank.bmp', scale_x=32, scale_y=32, colorkey=-1)
 
         self.game = game_obj
         self.direction = init_direction
@@ -101,7 +101,7 @@ class Projectile(pygame.sprite.Sprite):
     def __init__(self, game_obj, start_x, start_y, move_direction):
         pygame.sprite.Sprite.__init__(self)  # call Sprite initializer
 
-        self.image, self.rect = load_image(name='projectile.bmp', scale_x=4, scale_y=4, colorkey=-1)
+        self.image, self.rect = load_image(name='images/projectile.bmp', scale_x=4, scale_y=4, colorkey=-1)
 
         self.game = game_obj
         self.direction = move_direction
