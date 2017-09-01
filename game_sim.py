@@ -1,6 +1,5 @@
-from pygame.locals import *
 from game_objects import *
-from pygame import Color
+from game_agents import *
 
 
 class Game:
@@ -37,17 +36,17 @@ class Game:
         pygame.display.flip()
 
         self.players = []
-        for i in range(2):
-            if i == 0:
-                self.players.append(Player(game_obj=self,
-                                           image_name='images/tank1.bmp',
-                                           init_direction=90,
-                                           x=10, y=10))
-            else:
-                self.players.append(Player(game_obj=self,
-                                           image_name='images/tank2.bmp',
-                                           init_direction=270,
-                                           x=750, y=750))
+        self.player_agents = []
+
+        # Create a tank for the human agent
+        tank1 = Tank(game_obj=self, image_name='images/tank1.bmp', init_direction=90, x=10, y=10)
+        self.players.append(tank1)
+        self.player_agents.append(HumanAgent(game_obj=self, sprite=tank1))
+
+        # Create a tank for the computer agent
+        tank2 = Tank(game_obj=self, image_name='images/tank2.bmp', init_direction=270, x=750, y=750)
+        self.players.append(tank2)
+        self.player_agents.append(RLAgent(game_obj=self, sprite=tank2))
 
         self.all_player_sprites = pygame.sprite.RenderPlain(tuple(self.players))
         self.all_projectile_sprites = pygame.sprite.RenderPlain(tuple([]))
@@ -66,28 +65,15 @@ class Game:
             # This will ensure that the game doesn't run faster than 60 FPS
             self.clock.tick(60)
 
-            keys = pygame.key.get_pressed()
-            if keys[K_w]:
-                for p in self.players:
-                    p.move_fwd = 1
-            if keys[K_s]:
-                for p in self.players:
-                    p.move_rev = 1
-
-            for event in pygame.event.get():
+            events = pygame.event.get()
+            for event in events:
                 if event.type == QUIT:
                     going = False
                 elif event.type == KEYDOWN and event.key == K_ESCAPE:
                     going = False
-                elif event.type == KEYDOWN and event.key == K_a:
-                    for p in self.players:
-                        p.rotate_clock = 1
-                elif event.type == KEYDOWN and event.key == K_d:
-                    for p in self.players:
-                        p.rotate_anticlock = 1
-                elif event.type == KEYDOWN and event.key == K_SPACE:
-                    for p in self.players:
-                        p.fire_projectile = 1
+
+            for agent in self.player_agents:
+                agent.take_action(events)
 
             # Call update methods of all the sprites
             self.all_player_sprites.update()

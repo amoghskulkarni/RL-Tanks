@@ -2,7 +2,7 @@ import pygame
 from utils import load_image
 
 
-class Player(pygame.sprite.Sprite):
+class Tank(pygame.sprite.Sprite):
     def __init__(self, game_obj, image_name, init_direction, x, y):
         pygame.sprite.Sprite.__init__(self)  # call Sprite initializer
 
@@ -15,11 +15,11 @@ class Player(pygame.sprite.Sprite):
         self.original = self.image
         self.area = self.game.screen.get_rect()
 
-        self.rotate_clock = 0
-        self.rotate_anticlock = 0
-        self.move_fwd = 0
-        self.move_rev = 0
-        self.fire_projectile = 0
+        self.rotate_clock = False
+        self.rotate_anticlock = False
+        self.move_fwd = False
+        self.move_rev = False
+        self.fire_projectile = False
 
         rotate = pygame.transform.rotate
         self.image = rotate(self.original, self.direction)
@@ -80,20 +80,20 @@ class Player(pygame.sprite.Sprite):
                                                         move_direction=self.direction))
 
     def update(self):
-        if self.rotate_clock == 1:
-            self.rotate_clock = 0
+        if self.rotate_clock:
+            self.rotate_clock = False
             self.rotate90(rotation='clockwise')
-        if self.rotate_anticlock == 1:
-            self.rotate_anticlock = 0
+        if self.rotate_anticlock:
+            self.rotate_anticlock = False
             self.rotate90(rotation='anticlockwise')
-        if self.move_fwd == 1:
-            self.move_fwd = 0
+        if self.move_fwd:
+            self.move_fwd = False
             self.move(move_direction='forward')
-        if self.move_rev == 1:
-            self.move_rev = 0
+        if self.move_rev:
+            self.move_rev = False
             self.move(move_direction='reverse')
-        if self.fire_projectile == 1:
-            self.fire_projectile = 0
+        if self.fire_projectile:
+            self.fire_projectile = False
             self.fire()
 
 
