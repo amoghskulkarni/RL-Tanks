@@ -45,36 +45,25 @@ class Tank(pygame.sprite.Sprite):
     def move(self, move_direction):
         # If the direction which it is being moved in is 'forward', depending upon the
         new_pos = None
+        forward_move_dir = {0: (0, -1), 90: (-1, 0), 180: (0, 1), 270: (1, 0)}
+        reverse_move_dir = {0: (0, 1), 90: (1, 0), 180: (0, -1), 270: (-1, 0)}
+
         if move_direction == 'forward':
-            if self.direction == 0:
-                new_pos = self.rect.move(0, -1)
-            elif self.direction == 90:
-                new_pos = self.rect.move(-1, 0)
-            elif self.direction == 180:
-                new_pos = self.rect.move(0, 1)
-            elif self.direction == 270:
-                new_pos = self.rect.move(1, 0)
+            new_pos = forward_move_dir[self.direction]
         elif move_direction == 'reverse':
-            if self.direction == 0:
-                new_pos = self.rect.move(0, 1)
-            elif self.direction == 90:
-                new_pos = self.rect.move(1, 0)
-            elif self.direction == 180:
-                new_pos = self.rect.move(0, -1)
-            elif self.direction == 270:
-                new_pos = self.rect.move(-1, 0)
+            new_pos = reverse_move_dir[self.direction]
+
+        # If tank's new position is still in the canvas, move the tank
         if self.area.contains(new_pos):
             self.rect = new_pos
 
     def fire(self):
+        fire_actions_dir = {0: self.rect.midtop, 90: self.rect.midleft,
+                            180: self.rect.midbottom, 270: self.rect.midright}
+
         # Create a projectile at the tip, and append it to the game's sprite list
-        proj_x, proj_y = self.rect.midtop
-        if self.direction == 90:
-            proj_x, proj_y = self.rect.midleft
-        elif self.direction == 180:
-            proj_x, proj_y = self.rect.midbottom
-        elif self.direction == 270:
-            proj_x, proj_y = self.rect.midright
+        proj_x, proj_y = fire_actions_dir[self.direction]
+
         self.game.all_projectile_sprites.add(Projectile(game_obj=self.game,
                                                         start_x=proj_x, start_y=proj_y,
                                                         move_direction=self.direction))
@@ -100,36 +89,23 @@ class Tank(pygame.sprite.Sprite):
 class Projectile(pygame.sprite.Sprite):
     def __init__(self, game_obj, start_x, start_y, move_direction):
         pygame.sprite.Sprite.__init__(self)  # call Sprite initializer
+        init_position_dir = {0: (start_x, start_y - 4), 90: (start_x - 4, start_y),
+                             180: (start_x, start_y + 4), 270: (start_x + 4, start_y)}
 
         self.image, self.rect = load_image(name='images/projectile.bmp', scale_x=4, scale_y=4)
+        self.area = self.game.screen.get_rect()
 
         self.game = game_obj
         self.direction = move_direction
 
-        if self.direction == 0:
-            self.rect.center = start_x, start_y - 4
-        elif self.direction == 90:
-            self.rect.center = start_x - 4, start_y
-        elif self.direction == 180:
-            self.rect.center = start_x, start_y + 4
-        elif self.direction == 270:
-            self.rect.center = start_x + 4, start_y
-
-        self.area = self.game.screen.get_rect()
+        self.rect.center = init_position_dir[self.direction]
 
         self.touched_to_edge = False
 
     def move(self):
-        new_pos = None
+        move_direction_dir = {0: (0, -10), 90: (-10, 0), 180: (0, 10), 270: (10, 0)}
 
-        if self.direction == 0:
-            new_pos = self.rect.move(0, -10)
-        elif self.direction == 90:
-            new_pos = self.rect.move(-10, 0)
-        elif self.direction == 180:
-            new_pos = self.rect.move(0, 10)
-        elif self.direction == 270:
-            new_pos = self.rect.move(10, 0)
+        new_pos = move_direction_dir[self.direction]
 
         if self.area.contains(new_pos):
             self.rect = new_pos
