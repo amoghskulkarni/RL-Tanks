@@ -23,19 +23,6 @@ class Game:
         # Set the color as black
         self.background.fill((0, 0, 0))
 
-        if pygame.font:
-            font = pygame.font.Font(None, 36)
-            text = font.render("The tank which shoots down the other, wins.", 1, (255, 255, 255))
-            text_pos = text.get_rect(centerx=self.background.get_width() / 2, centery=30)
-            self.background.blit(text, text_pos)
-            text = font.render("Press Esc to start.", 1, (255, 255, 255))
-            text_pos = text.get_rect(centerx=self.background.get_width() / 2, centery=60)
-            self.background.blit(text, text_pos)
-
-        # blit() superimposes the Surface() objects on one another and flip() swaps the double/single buffered displays
-        self.screen.blit(self.background, (0, 0))
-        pygame.display.flip()
-
         # Bookkeeping for players (i.e. playable sprites) and the agents that control them
         self.players = []
         self.player_agents = []
@@ -60,16 +47,11 @@ class Game:
         # Create a clock
         self.clock = pygame.time.Clock()
 
-    def run(self):
-        show_title = True
-        while show_title:
-            for event in pygame.event.get():
-                if event.type == KEYDOWN and event.key == K_ESCAPE:
-                    show_title = False
-                    self.background.fill((0, 0, 0))
+    def play_round(self):
+        round_not_over = True
+        game_running = True
 
-        going = True
-        while going:
+        while round_not_over:
             # This will ensure that the game doesn't run faster than 60 FPS
             self.clock.tick(60)
 
@@ -79,9 +61,11 @@ class Game:
             # Check for "quit" events
             for event in events:
                 if event.type == QUIT:
-                    going = False
+                    game_running = False
+                    round_not_over = False
                 elif event.type == KEYDOWN and event.key == K_ESCAPE:
-                    going = False
+                    game_running = False
+                    round_not_over = False
 
             # Tell agents to take actions
             for agent in self.player_agents:
@@ -93,10 +77,47 @@ class Game:
             # Call update methods of all the sprites
             self.all_player_sprites.update()
             self.all_projectile_sprites.update()
-            self.hud_sprite.update()
 
-            # Update the screen
+            # Update the player sprites and projectiles
             self.screen.blit(self.background, (0, 0))
             self.all_player_sprites.draw(self.screen)
             self.all_projectile_sprites.draw(self.screen)
             pygame.display.flip()
+
+        return game_running
+
+    def show_welcome_screen(self):
+        if pygame.font:
+            font = pygame.font.Font(None, 36)
+            text = font.render("The tank which shoots down the other, wins.", 1, (255, 255, 255))
+            text_pos = text.get_rect(centerx=self.background.get_width() / 2, centery=30)
+            self.background.blit(text, text_pos)
+            text = font.render("Press Enter to start.", 1, (255, 255, 255))
+            text_pos = text.get_rect(centerx=self.background.get_width() / 2, centery=60)
+            self.background.blit(text, text_pos)
+
+        # blit() superimposes the Surface() objects on one another and flip() swaps the double/single buffered displays
+        self.screen.blit(self.background, (0, 0))
+        pygame.display.flip()
+
+        show_title = True
+        while show_title:
+            for event in pygame.event.get():
+                if event.type == KEYDOWN and event.key == K_RETURN:
+                    show_title = False
+                    self.background.fill((0, 0, 0))
+                    self.hud_sprite.update()
+
+    def run(self):
+        self.show_welcome_screen()
+
+        going = True
+        while going:
+            # Keep playing rounds until the end condition is hit
+            going = self.play_round()
+
+            # Update the HUD after each round
+            self.hud_sprite.update()
+
+        # Print winner on the screen
+

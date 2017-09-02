@@ -1,6 +1,5 @@
 import pygame
 from utils import load_image
-from pygame.color import Color
 
 
 class Tank(pygame.sprite.Sprite):
@@ -129,13 +128,15 @@ class HUD(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)  # call Sprite initializer
         self.game = game_obj
 
-    def print_score(self):
+    def update(self):
         font = pygame.font.Font(None, 36)
         column_width = self.game.background.get_width() / len(self.game.player_agents)
+
         for i, agent in enumerate(self.game.player_agents):
             text = font.render(agent.name + ': ' + str(agent.score), 1, (255, 255, 255))
             text_pos = text.get_rect(centerx=i*column_width + column_width / 2, centery=30)
+
             self.game.background.blit(text, text_pos)
 
-    def update(self):
-        self.print_score()
+        self.game.screen.blit(self.game.background, (0, 0))
+        pygame.display.flip()
