@@ -15,6 +15,9 @@ class Tank(pygame.sprite.Sprite):
         self.original = self.image
         self.area = self.game.screen.get_rect()
 
+        # Placeholder for the agent that is going to control this tank
+        self.agent = None
+
         self.rotate_clock = False
         self.rotate_anticlock = False
         self.move_fwd = False
@@ -64,9 +67,10 @@ class Tank(pygame.sprite.Sprite):
         # Create a projectile at the tip, and append it to the game's sprite list
         proj_x, proj_y = fire_actions_dir[self.direction]
 
-        self.game.all_projectile_sprites.add(Projectile(game_obj=self.game,
-                                                        start_x=proj_x, start_y=proj_y,
-                                                        move_direction=self.direction))
+        projectile = Projectile(game_obj=self.game, start_x=proj_x, start_y=proj_y, move_direction=self.direction)
+        projectile.agent = self.agent
+
+        self.game.all_projectile_sprites.add(projectile)
 
     def update(self):
         if self.rotate_clock:
@@ -98,6 +102,9 @@ class Projectile(pygame.sprite.Sprite):
 
         self.direction = move_direction
 
+        # Placeholder for the agent that is going to control this tank
+        self.agent = None
+
         self.rect.center = init_position_dir[self.direction]
 
         self.touched_to_edge = False
@@ -113,14 +120,26 @@ class Projectile(pygame.sprite.Sprite):
             self.touched_to_edge = True
 
     def update(self):
-        pygame.sprite.groupcollide(groupa=self.game.all_projectile_sprites,
-                                   groupb=self.game.all_player_sprites,
-                                   dokilla=True,
-                                   dokillb=True)
-        if not self.touched_to_edge:
-            self.move()
-        else:
+        tanks_hit = pygame.sprite.spritecollide(sprite=self, group=self.game.all_player_sprites, dokill=False)
+
+        # If the tank that is hit is enemy, increment the score for each of them
+        for tank in tanks_hit:
+            if tank.agent is self.agent:
+                self.agent.score -= 2
+            else:
+                self.agent.score += 1
+            tank.kill()
+            # Round-is-over flag
+            # TODO: Raise this flag only if the list self.all_player_sprites contains sprites controlled by same agent
+            # if round-is-over-condition:
+            self.game.round_not_over = False
+            for alive_tank in self.game.all_player_sprites:
+                alive_tank.kill()
+
+        if self.touched_to_edge or len(tanks_hit) > 0:
             self.kill()
+        else:
+            self.move()
 
 
 class HUD(pygame.sprite.Sprite):
@@ -129,6 +148,8 @@ class HUD(pygame.sprite.Sprite):
         self.game = game_obj
 
     def update(self):
+        self.game.background.fill((0, 0, 0))
+
         font = pygame.font.Font(None, 36)
         column_width = self.game.background.get_width() / len(self.game.player_agents)
 

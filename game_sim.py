@@ -24,21 +24,21 @@ class Game:
         self.background.fill((0, 0, 0))
 
         # Bookkeeping for players (i.e. playable sprites) and the agents that control them
-        self.players = []
+        tanks = []
         self.player_agents = []
 
         # Create a tank for the human agent
         tank1 = Tank(game_obj=self, image_name='images/tank1.bmp', init_direction=90, x=10, y=10)
-        self.players.append(tank1)
+        tanks.append(tank1)
         self.player_agents.append(HumanAgent(name='Human', game_obj=self, sprite=tank1))
 
         # Create a tank for the computer agent
         tank2 = Tank(game_obj=self, image_name='images/tank2.bmp', init_direction=270, x=750, y=750)
-        self.players.append(tank2)
+        tanks.append(tank2)
         self.player_agents.append(RLAgent(name='RL Agent', game_obj=self, sprite=tank2))
 
-        # Create all sprites (except projectiles)
-        self.all_player_sprites = pygame.sprite.RenderPlain(tuple(self.players))
+        # Create all sprites
+        self.all_player_sprites = pygame.sprite.RenderPlain(tuple(tanks))
         self.all_projectile_sprites = pygame.sprite.RenderPlain(())
 
         # Create an HUD
@@ -47,11 +47,13 @@ class Game:
         # Create a clock
         self.clock = pygame.time.Clock()
 
+        # Game state variables
+        self.round_not_over = True
+
     def play_round(self):
-        round_not_over = True
         game_running = True
 
-        while round_not_over:
+        while self.round_not_over:
             # This will ensure that the game doesn't run faster than 60 FPS
             self.clock.tick(60)
 
@@ -62,17 +64,14 @@ class Game:
             for event in events:
                 if event.type == QUIT:
                     game_running = False
-                    round_not_over = False
+                    self.round_not_over = False
                 elif event.type == KEYDOWN and event.key == K_ESCAPE:
                     game_running = False
-                    round_not_over = False
+                    self.round_not_over = False
 
             # Tell agents to take actions
             for agent in self.player_agents:
-                if isinstance(agent, HumanAgent):
-                    agent.take_action(keys=keys, events=events)
-                elif isinstance(agent, RLAgent):
-                    agent.take_action()
+                agent.take_action(keys=keys, events=events)
 
             # Call update methods of all the sprites
             self.all_player_sprites.update()

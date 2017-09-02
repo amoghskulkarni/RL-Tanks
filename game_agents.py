@@ -8,6 +8,9 @@ class HumanAgent:
         self.sprite = sprite
         self.score = 0
 
+        # Store self-reference for scoring
+        self.sprite.agent = self
+
     def take_action(self, **kwargs):
         keys = []
         events = []
@@ -42,5 +45,8 @@ class RLAgent:
         self.sprite = sprite
         self.score = 0
 
-    def take_action(self):
+        # Store self-reference for scoring
+        self.sprite.agent = self
+
+    def take_action(self, **kwargs):
         pass
