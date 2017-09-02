@@ -121,3 +121,19 @@ class Projectile(pygame.sprite.Sprite):
             self.move()
         else:
             self.kill()
+
+
+class HUD(pygame.sprite.Sprite):
+    def __init__(self, game_obj):
+        pygame.sprite.Sprite.__init__(self)  # call Sprite initializer
+
+        self.game = game_obj
+
+    def print_static(self):
+        pass
+
+    def print_dynamic(self):
+        pass
+
+    def update(self):
+        pass

@@ -1,6 +1,5 @@
 import pygame
 from pygame import error
-from pygame.locals import RLEACCEL
 
 
 def load_image(name, scale_x, scale_y):
