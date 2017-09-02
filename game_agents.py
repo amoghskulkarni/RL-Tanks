@@ -2,14 +2,11 @@ from pygame.locals import *
 
 
 class HumanAgent:
-    def __init__(self, name, game_obj, sprite):
+    def __init__(self, name, game_obj):
         self.name = name
         self.game = game_obj
-        self.sprite = sprite
+        self.sprite = None
         self.score = 0
-
-        # Store self-reference for scoring
-        self.sprite.agent = self
 
     def take_action(self, **kwargs):
         keys = []
@@ -39,14 +36,11 @@ class HumanAgent:
 
 
 class RLAgent:
-    def __init__(self, name, game_obj, sprite):
+    def __init__(self, name, game_obj):
         self.name = name
         self.game = game_obj
-        self.sprite = sprite
+        self.sprite = None
         self.score = 0
-
-        # Store self-reference for scoring
-        self.sprite.agent = self
 
     def take_action(self, **kwargs):
         pass

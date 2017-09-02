@@ -23,22 +23,13 @@ class Game:
         # Set the color as black
         self.background.fill((0, 0, 0))
 
-        # Bookkeeping for players (i.e. playable sprites) and the agents that control them
-        tanks = []
         self.player_agents = []
 
-        # Create a tank for the human agent
-        tank1 = Tank(game_obj=self, image_name='images/tank1.bmp', init_direction=90, x=10, y=10)
-        tanks.append(tank1)
-        self.player_agents.append(HumanAgent(name='Human', game_obj=self, sprite=tank1))
-
-        # Create a tank for the computer agent
-        tank2 = Tank(game_obj=self, image_name='images/tank2.bmp', init_direction=270, x=750, y=750)
-        tanks.append(tank2)
-        self.player_agents.append(RLAgent(name='RL Agent', game_obj=self, sprite=tank2))
+        self.player_agents.append(HumanAgent(name='Human', game_obj=self))
+        self.player_agents.append(RLAgent(name='RL Agent', game_obj=self))
 
         # Create all sprites
-        self.all_player_sprites = pygame.sprite.RenderPlain(tuple(tanks))
+        self.all_player_sprites = pygame.sprite.RenderPlain(())
         self.all_projectile_sprites = pygame.sprite.RenderPlain(())
 
         # Create an HUD
@@ -48,6 +39,31 @@ class Game:
         self.clock = pygame.time.Clock()
 
         # Game state variables
+        self.round_not_over = True
+
+    def start_round(self):
+        # Create tank(s) for the human agent
+        tank1 = Tank(game_obj=self, image_name='images/tank1.bmp',
+                     init_direction=90, agent=self.player_agents[0],
+                     x=10, y=10)
+        self.all_player_sprites.add(tank1)
+
+        # Create tank(s) for the computer agent
+        tank2 = Tank(game_obj=self, image_name='images/tank2.bmp',
+                     init_direction=270, agent=self.player_agents[1],
+                     x=750, y=750)
+        self.all_player_sprites.add(tank2)
+
+        # Call update methods of all the sprites
+        self.all_player_sprites.update()
+        self.all_projectile_sprites.update()
+
+        # Update the player sprites and projectiles
+        self.screen.blit(self.background, (0, 0))
+        self.all_player_sprites.draw(self.screen)
+        self.all_projectile_sprites.draw(self.screen)
+        pygame.display.flip()
+
         self.round_not_over = True
 
     def play_round(self):
@@ -113,6 +129,7 @@ class Game:
         going = True
         while going:
             # Keep playing rounds until the end condition is hit
+            self.start_round()
             going = self.play_round()
 
             # Update the HUD after each round

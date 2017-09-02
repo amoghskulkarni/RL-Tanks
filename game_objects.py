@@ -3,7 +3,7 @@ from utils import load_image
 
 
 class Tank(pygame.sprite.Sprite):
-    def __init__(self, game_obj, image_name, init_direction, x, y):
+    def __init__(self, game_obj, image_name, init_direction, agent, x, y):
         pygame.sprite.Sprite.__init__(self)  # call Sprite initializer
 
         self.image, self.rect = load_image(name=image_name, scale_x=32, scale_y=32)
@@ -15,8 +15,9 @@ class Tank(pygame.sprite.Sprite):
         self.original = self.image
         self.area = self.game.screen.get_rect()
 
-        # Placeholder for the agent that is going to control this tank
-        self.agent = None
+        # Save the self-reference into agent that controls this tank
+        self.agent = agent
+        self.agent.sprite = self
 
         self.rotate_clock = False
         self.rotate_anticlock = False
