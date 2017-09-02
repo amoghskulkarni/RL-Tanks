@@ -2,7 +2,8 @@ from pygame.locals import *
 
 
 class HumanAgent:
-    def __init__(self, game_obj, sprite):
+    def __init__(self, name, game_obj, sprite):
+        self.name = name
         self.game = game_obj
         self.sprite = sprite
         self.score = 0
@@ -35,7 +36,8 @@ class HumanAgent:
 
 
 class RLAgent:
-    def __init__(self, game_obj, sprite):
+    def __init__(self, name, game_obj, sprite):
+        self.name = name
         self.game = game_obj
         self.sprite = sprite
         self.score = 0

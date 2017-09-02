@@ -1,4 +1,5 @@
-from game_objects import *
+import pygame
+from game_objects import Tank, HUD
 from game_agents import *
 
 
@@ -35,21 +36,28 @@ class Game:
         self.screen.blit(self.background, (0, 0))
         pygame.display.flip()
 
+        # Bookkeeping for players (i.e. playable sprites) and the agents that control them
         self.players = []
         self.player_agents = []
 
         # Create a tank for the human agent
         tank1 = Tank(game_obj=self, image_name='images/tank1.bmp', init_direction=90, x=10, y=10)
         self.players.append(tank1)
-        self.player_agents.append(HumanAgent(game_obj=self, sprite=tank1))
+        self.player_agents.append(HumanAgent(name='Human', game_obj=self, sprite=tank1))
 
         # Create a tank for the computer agent
         tank2 = Tank(game_obj=self, image_name='images/tank2.bmp', init_direction=270, x=750, y=750)
         self.players.append(tank2)
-        self.player_agents.append(RLAgent(game_obj=self, sprite=tank2))
+        self.player_agents.append(RLAgent(name='RL Agent', game_obj=self, sprite=tank2))
 
+        # Create all sprites (except projectiles)
         self.all_player_sprites = pygame.sprite.RenderPlain(tuple(self.players))
-        self.all_projectile_sprites = pygame.sprite.RenderPlain(tuple([]))
+        self.all_projectile_sprites = pygame.sprite.RenderPlain(())
+
+        # Create an HUD
+        self.hud_sprite = HUD(game_obj=self)
+
+        # Create a clock
         self.clock = pygame.time.Clock()
 
     def run(self):
@@ -85,6 +93,7 @@ class Game:
             # Call update methods of all the sprites
             self.all_player_sprites.update()
             self.all_projectile_sprites.update()
+            self.hud_sprite.update()
 
             # Update the screen
             self.screen.blit(self.background, (0, 0))
