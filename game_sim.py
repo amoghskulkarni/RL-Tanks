@@ -102,6 +102,8 @@ class Game:
         return game_running
 
     def show_welcome_screen(self):
+        self.background.fill((0, 0, 0))
+
         if pygame.font:
             font = pygame.font.Font(None, 36)
             text = font.render("The tank which shoots down the other, wins.", 1, (255, 255, 255))
@@ -123,6 +125,30 @@ class Game:
                     self.background.fill((0, 0, 0))
                     self.hud_sprite.update()
 
+    def show_winner(self):
+        self.background.fill((0, 0, 0))
+
+        from operator import attrgetter
+        winner = max(self.player_agents, key=attrgetter('score'))
+
+        if pygame.font:
+            font = pygame.font.Font(None, 36)
+            text = font.render("Winner: " + winner.name, 1, (255, 255, 255))
+            text_pos = text.get_rect(centerx=self.background.get_width() / 2, centery=30)
+            self.background.blit(text, text_pos)
+            text = font.render("Press Esc to quit.", 1, (255, 255, 255))
+            text_pos = text.get_rect(centerx=self.background.get_width() / 2, centery=60)
+            self.background.blit(text, text_pos)
+
+        # blit() superimposes the Surface() objects on one another and flip() swaps the double/single buffered displays
+        self.screen.blit(self.background, (0, 0))
+        pygame.display.flip()
+
+        while True:
+            for event in pygame.event.get():
+                if event.type == KEYDOWN and event.key == K_ESCAPE:
+                    return
+
     def run(self):
         self.show_welcome_screen()
 
@@ -130,10 +156,11 @@ class Game:
         while going:
             # Keep playing rounds until the end condition is hit
             self.start_round()
+
             going = self.play_round()
 
             # Update the HUD after each round
             self.hud_sprite.update()
 
         # Print winner on the screen
-
+        self.show_winner()
