@@ -19,12 +19,6 @@ class Tank(pygame.sprite.Sprite):
         self.agent = agent
         self.agent.sprite = self
 
-        self.rotate_clock = False
-        self.rotate_anticlock = False
-        self.move_fwd = False
-        self.move_rev = False
-        self.fire_projectile = False
-
         rotate = pygame.transform.rotate
         self.image = rotate(self.original, self.direction)
 
@@ -34,14 +28,14 @@ class Tank(pygame.sprite.Sprite):
             if self.direction == 360:
                 self.direction = 0
                 self.image = self.original
-            if self.direction < 0:
+            elif self.direction < 0:
                 self.direction += 360
         elif rotation == 'anticlockwise':
             self.direction -= 90
             if self.direction == 360:
                 self.direction = 0
                 self.image = self.original
-            if self.direction < 0:
+            elif self.direction < 0:
                 self.direction += 360
         rotate = pygame.transform.rotate
         self.image = rotate(self.original, self.direction)
@@ -74,21 +68,8 @@ class Tank(pygame.sprite.Sprite):
         self.game.all_projectile_sprites.add(projectile)
 
     def update(self):
-        if self.rotate_clock:
-            self.rotate_clock = False
-            self.rotate90(rotation='clockwise')
-        if self.rotate_anticlock:
-            self.rotate_anticlock = False
-            self.rotate90(rotation='anticlockwise')
-        if self.move_fwd:
-            self.move_fwd = False
-            self.move(move_direction='forward')
-        if self.move_rev:
-            self.move_rev = False
-            self.move(move_direction='reverse')
-        if self.fire_projectile:
-            self.fire_projectile = False
-            self.fire()
+        # Move the control logic to the agent's take_action() method
+        pass
 
 
 class Projectile(pygame.sprite.Sprite):
@@ -130,12 +111,14 @@ class Projectile(pygame.sprite.Sprite):
             else:
                 self.agent.score += 1
             tank.kill()
-            # Round-is-over flag
-            # TODO: Raise this flag only if the list self.all_player_sprites contains sprites controlled by same agent
-            # if round-is-over-condition:
-            self.game.round_not_over = False
-            for alive_tank in self.game.all_player_sprites:
-                alive_tank.kill()
+
+            # TODO: Make round_over True, only if the list self.all_player_sprites contains sprites controlled by the same agent
+            round_over = True
+
+            if round_over:
+                self.game.round_not_over = False
+                for alive_tank in self.game.all_player_sprites:
+                    alive_tank.kill()
 
         if self.touched_to_edge or len(tanks_hit) > 0:
             self.kill()

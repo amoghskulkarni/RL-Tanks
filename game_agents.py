@@ -22,17 +22,17 @@ class HumanAgent:
 
         # Check what keys are pressed, take an action accordingly
         if keys[K_w]:
-            self.sprite.move_fwd = True
+            self.sprite.move(move_direction='forward')
         if keys[K_s]:
-            self.sprite.move_rev = True
+            self.sprite.move(move_direction='reverse')
 
         for event in events:
             if event.type == KEYDOWN and event.key == K_a:
-                self.sprite.rotate_clock = True
+                self.sprite.rotate90(rotation='clockwise')
             elif event.type == KEYDOWN and event.key == K_d:
-                self.sprite.rotate_anticlock = True
+                self.sprite.rotate90(rotation='anticlockwise')
             elif event.type == KEYDOWN and event.key == K_SPACE:
-                self.sprite.fire_projectile = True
+                self.sprite.fire()
 
 
 class RLAgent:
